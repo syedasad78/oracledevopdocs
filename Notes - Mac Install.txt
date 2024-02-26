@@ -1,0 +1,32 @@
+Install Homebrew
+/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
+
+add homebrew to path
+export PATH=/opt/homebrew/bin:$PATH
+
+restart shell to pick up the new path
+source ~/.zshrc
+
+
+Install Podman
+https://www.redhat.com/sysadmin/run-containers-mac-podman
+brew install podman
+
+
+Install Rancher
+brew install rancher-desktop
+
+
+Install minikube
+brew install minikube
+
+
+ocuocictrng25	
+https://cloud.oracle.com/?tenant=ocuocictrng25	
+99211211-lab.user21	
+0tx3kfJ}2ErVE!bO5uM7
+
+
+
+
+

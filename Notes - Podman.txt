@@ -1,0 +1,264 @@
+Podman Troubleshooting
+----------------------
+
+Stop and restart Podman Desktop.
+
+In Podman Desktop, restart the Podman machine.
+
+In a terminal, restart the Podman machine:
+
+$ podman machine stop
+$ podman machine info
+$ podman machine start
+$ podman machine info
+
+If the previous step did not work for you, delete your Podman machine, and create a new one:
+
+$ podman machine rm
+$ podman machine info
+
+$ podman machine init
+$ podman machine info
+
+
+If the previous steps did not work for you, delete your Podman configuration files, and create a new Podman machine:
+
+$ rm -rf ~/.local/share/containers/podman
+$ rm -rf ~/.config/containers/
+$ podman machine init
+
+
+podman machine set --rootful
+and restart podman
+
+   
+-------------------------------------------------------------------------------------------------
+Minikube with Podman Driver
+
+$ minikube start --driver=podman
+
+//  Exiting due to GUEST_DRIVER_MISMATCH: The existing "minikube" cluster was created using the "docker" driver, which is incompatible with requested "podman" driver.
+
+💡  Suggestion: Delete the existing 'minikube' cluster using: 'minikube delete', or start the existing 'minikube' cluster using: 'minikube start --driver=docker'
+
+$ minikube delete 
+
+$ minikube start --driver=podman --container-runtime=cri-o
+$ minikube start --driver=podman
+
+
+
+-------------------------------------------------------------------------------------------------
+$ podman run -ti --rm registry.access.redhat.com/ubi8/httpd-24 bash
+
+grep PRETTY_NAME /etc/os-release
+
+
+# Number of commands available in the container
+ls /usr/bin | wc -l
+
+ps
+
+
+podman run -d -p 8080:8080 --name myapp registry.access.redhat.com/ubi8/httpd-24
+
+podman run -d -p 8081:8080 --name myapp2 registry.access.redhat.com/ubi8/httpd-24
+podman run -d -p 8082:8080 --name myapp3 registry.access.redhat.com/ubi8/httpd-24
+
+
+$ podman port myapp
+8080/tcp -> 0.0.0.0:8080
+
+
+podman stop myapp
+
+# forcibly exit container
+podman stop -t 0 myapp1
+
+
+podman start myapp
+
+
+#list containers
+podman ps
+
+podman ps --all --quiet --size
+
+
+The podman inspect command can also be used to inspect images, networks, volumes, and pods. 
+The podman container inspect command is also available and specific to containers. 
+But most users just type the shorter podman inspect command:
+
+// Inspect container
+$ podman inspect myapp 
+
+// Inspect Image
+$ podman inspect registry.access.redhat.com/ubi8/httpd-24
+
+
+
+# examine the command executed when you start the container
+podman inspect --format '{{ .Config.Cmd }}' myapp
+
+
+# Inspecting the stop signal to be used when stopping the container
+podman inspect --format '{{ .Config.StopSignal }}' myapp
+
+
+podman rm myapp1
+
+
+podman exec -i myapp bash -c 'cat > /var/www/html/index.html' << _EOF
+
+<html>
+<head>
+</head>
+<body>
+<h1>Hello World</h1>
+</body>
+</html>
+_EOF
+
+
+A key difference between podman run and podman exec is that run creates a new container off of an image with 
+processes running inside, while exec starts processes inside of existing containers:
+
+
+podman exec myapp cat /var/www/html/index.html
+
+
+Creating an image from a container
+$ podman stop myapp
+
+$ podman commit myapp myimage
+
+
+One handy Podman command for showing the layers of an image is the podman image tree command:
+
+$ podman image tree myimage
+$ podman image tree httpd-24
+
+
+# podman image diff, allows you to see the actual files and directories that have been changed (C), added (A), or deleted (D) as 
+# compared to another image or the lower layer:
+podman image diff myimage ubi8/httpd-24
+
+
+podman images
+
+podman image inspect myimage
+
+
+# pushing images to quay
+------------------------
+
+
+podman login quay.io
+Username: syedasad
+Password: Thenet4u@@Once
+Login Succeeded!
+
+podman push myimage quay.io/syedasad/myimage
+
+
+# This command deletes the cached credentials stored in the auth.json file:
+$ podman logout quay.io
+Removed login credentials for quay.io
+
+
+
+# It’d be nice to just have the local image named quay.io/syedasad/myimage, in which case you could have just executed
+podman tag myimage quay.io/syedasad/myimage
+
+podman images
+
+podman push quay.io/syedasad/myimage
+
+
+
+# Use the podman rmi command to remove local images:
+$ podman rmi localhost/myimage
+Untagged: localhost/myimage:latest
+
+$ podman rmi 141038467423cdf
+
+
+The prune command also has the --all option, which removes all images that are currently not in use by any containers, including dangling images:
+$ podman image prune -a
+
+
+
+podman pull quay.io/syedasad/myimage
+
+# Building images
+
+mkdir myapp
+
+cat > myapp/index.html << _EOF
+<html>
+<head>
+</head>
+<body>
+<h1>Hello World</h1>
+</body>
+</html>
+_EOF
+
+
+
+cat > index.html << _EOF
+<html>
+<head>
+</head>
+<body>
+<h1>Hello World Container 03</h1>
+</body>
+</html>
+_EOF
+
+
+cat > myapp/Containerfile << _EOF
+FROM ubi8/httpd-24
+COPY index.html /var/www/html/index.html
+_EOF
+
+
+podman build -t quay.io/syedasad/myimage ./myapp
+
+
+
+
+
+p68
+
+Pushing images to dockerhub
+---------------------------
+
+podman tag oracle/dockerfiledemo:latest docker.io/syedasad/dockerfiledemo:latest
+
+podman push docker.io/syedasad/dockerfiledemo:latest
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

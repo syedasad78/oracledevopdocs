@@ -1,0 +1,352 @@
+Lab 01
+------
+
+$ ansible-galaxy collection install oracle.oci
+
+$ ansible localhost -m oracle.oci.oci_object_storage_namespace_facts
+
+localhost | SUCCESS => {
+    "changed": false,
+    "namespace": "idiqhthymqal"
+}
+
+
+$ git clone https://github.com/ou-developers/launch_compute_instance
+
+$ ls
+
+$ cd launch_compute_instance
+
+
+export SAMPLE_IMAGE_OCID=ocid1.image.oc1.iad.aaaaaaaa33a3lofqhzh5wvpi34fnsqiwdwaytjls52pksm7r5kinnp6ew3na
+export SAMPLE_COMPARTMENT_OCID=ocid1.compartment.oc1..aaaaaaaa3iy3l77ny5y2nrpu5fop2q4vcnkupi24dwa4px4jdxpgs5e3grxq
+export SAMPLE_AD_NAME=krJi:US-ASHBURN-AD-1
+
+
+echo $SAMPLE_IMAGE_OCID
+echo $SAMPLE_COMPARTMENT_OCID
+echo $SAMPLE_AD_NAME
+
+
+ansible-playbook sample.yaml
+
+
+unset SAMPLE_IMAGE_OCID
+unset SAMPLE_COMPARTMENT_OCID
+unset SAMPLE_AD_NAME
+
+
+Lab 02
+------
+
+
+IAD-DOP-LAB02-1-VCN-01
+IAD-DOP-LAB02-1-VM-01
+
+
+Public SSH Key
+
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQChv0y4JVRNB+ExOILQKkUW7kWnke0GwHv/fr2IM3CZpv/jofHpRHdreiQo6BzTOgXIMwOMaD5BegWfjCmoIg+DYYRb8hx50i6g0d13lmAyBX7scrGEbfVwb6TuHvA7SYnt4vM4hJDEaOipBnccbajKVSV/QFq/YX/K7j1SginKN0qfi94qO+yv6Ao+a4uUrq2z2Td+EEjHIkUy7J447oZ+kyEwp0p84sMk4AFNLwSkeqzN0/pTP0X0i650lC13pXm9HrtlqO6kxUmrUcK/XHSg9vpDOnbcPeXEoDA4Gw2PHuh4x0zY6fYo7hvpwk5iEb7kA+YyNtpM2Yt8hMTvZ+3T syedasad@7019823276f7
+
+
+
+
+
+
+************************
+ocilabs compartment id		: ocid1.compartment.oc1..aaaaaaaa3iy3l77ny5y2nrpu5fop2q4vcnkupi24dwa4px4jdxpgs5e3grxq
+namespace					: idiqhthymqal
+
+
+Training compartment - 99211211-C21
+ocid1.compartment.oc1..aaaaaaaaz7xd64lfhxqchtrarlvb2qpkmyreo6rnzche6673iskagftu22fa
+
+Tenancy		:	ocuocictrng25
+userid		:	99211211-lab.user21
+namespace	:	ocuocictrng25
+
+---------------------------------------------------------------------------------------
+Lesson 06 - Lab Commands
+
+
+git clone https://github.com/ou-developers/docker-helloworld-demo
+
+cd docker-helloworld-demo
+
+docker -v
+
+docker images
+
+docker build -t oci_sample_webapp_asad:1.0 .
+
+docker images
+
+# docker run -d --name sample_webapp_asad:1.0 .
+
+docker run -d --name webapp-asad -p 80:80/tcp oci_sample_webapp_asad:1.0
+
+docker ps
+
+curl -k http://127.0.0.1:80
+
+docker ps -a
+
+docker stop 310a
+
+curl -k http://127.0.0.1:80
+
+docker ps -a
+
+docker rm webapp-asad
+
+docker ps -a
+
+---------------------------------------------------------------------------------------
+Lesson 07 - Lab Commands 
+
+
+allow group <group-name> to manage repos in compartment ocilabs
+
+Token Name	: DevOps		
+Token		: wOdvz5Xz:qV[bWms{Y;8
+
+
+create repository with name:	iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad
+
+docker login iad.ocir.io
+
+username			:	ocuocictrng25/99211211-lab.user21
+tenancy namespace	:	ocuocictrng25
+Auth token			:	wOdvz5Xz:qV[bWms{Y;8
+
+
+
+docker tag oci_sample_webapp_asad:1.0 iad.ocir.io/ocuocictrng25/iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad:latest
+
+docker images
+
+docker push iad.ocir.io/ocuocictrng25/iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad:latest
+
+check for image in GUI
+
+docker rmi oci_sample_webapp_asad:1.0
+
+docker rmi iad.ocir.io/idiqhthymqal/iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad:latest or 
+
+docker rmi iad.ocir.io/idiqhthymqal/iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad:latest -f
+
+
+copy pull command from oci GUI by selecting version of image in dropdown
+
+docker pull iad.ocir.io/ocuocictrng25/iad-dop-lab02-1-ocir-1/oci_sample_webapp_asad:latest
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 08 - Lab Commands 
+
+oci ce cluster create-kubeconfig --cluster-id ocid1.cluster.oc1.iad.aaaaaaaabdtdhhozcvovif77h3fzpzrdvt6txa226hwtw4ab6cwdcjuuqatq --file $HOME/.kube/config --region us-ashburn-1 --token-version 2.0.0  --kube-endpoint PUBLIC_ENDPOINT
+
+kubectl get nodes
+
+kubectl create ns ns-asad
+
+kubectl cluster-info
+
+kubectl create deployment deploy-asad --image=docker.io/httpd:latest -n ns-asad or
+kubectl create deployment deploy-asad-quay --image=registry.access.redhat.com/ubi8/httpd-24 -n ns-asad
+
+
+// Since Podman runs in rootless mode, it cannot use ports below 1000.  
+// Hence in the below deployment, we are using target-port=8080 (a number above 1000)
+
+kubectl expose deployment deploy-asad --type=LoadBalancer --name=svc-asad --port=80 --target-port=80 -n ns-asad
+kubectl expose deployment deploy-asad-quay --type=LoadBalancer --name=svc-asad-quay --port=80 --target-port=8080 -n ns-asad
+kubectl expose deployment deploy-asad-quay --type=NodePort --name=svc-asad-quay --port=80 --target-port=8080 -n ns-asad
+
+kubectl get deploy -n ns-asad
+
+kubectl get pods -n ns-asad
+
+kubectl get svc -n ns-asad
+
+kubectl get replicaset -n ns-asad
+
+kubectl scale --replicas=3 deployment/deploy-asad -n ns-asad
+kubectl scale --replicas=3 deployment/deploy-asad-quay -n ns-asad
+
+kubectl get all -n ns-asad
+
+kubectl logs <podname> -n ns-asad
+
+kubectl logs pod/deploy-asad-789bc6ccd8-cj9f4 -n ns-asad
+
+kubectl delete deploy deploy-asad -n ns-asad
+kubectl delete deploy deploy-asad-quay -n ns-asad
+
+kubectl delete svc svc-asad -n ns-asad
+kubectl delete svc svc-asad-quay -n ns-asad
+
+kubectl create secret docker-registry ocir-secret-asad --docker-server=iad.ocir.io --docker-username='idiqhthymqal/syedasad@pivotal.net.in' --docker-password='ZZc_J8aY1Yt0zNy>MdmL' --docker-email='syedasad@pivotal.net.in' -n ns-asad
+
+kubectl get secrets -n ns-asad
+
+kubectl get all -n ns-asad
+
+kubectl scale --replicas=2 deployment/helloworld-deployment-asad -n ns-asad
+
+kubectl delete -f HelloWorld-lb.yaml -n ns-asad
+
+
+kubectl get all -n ns-asad
+
+
+---------------------------------------------------------------------------------------
+Lesson 09 - Lab Commands
+
+
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 10 - Lab Commands
+
+Github Personal Auth Token: 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
+
+
+DevOps Policy Statements
+Allow dynamic-group DevOpsDynamicGroup to read secret-family in compartment ocilabs
+Allow dynamic-group DevOpsDynamicGroup to read devops-family in compartment ocilabs
+
+DevOpsDynamicGroup
+All {resource.compartment.id = 'ocid1.compartment.oc1..aaaaaaaa3iy3l77ny5y2nrpu5fop2q4vcnkupi24dwa4px4jdxpgs5e3grxq', Any {resource.type = 'devopsdeploypipeline', resource.type = 'devopsbuildpipeline', resource.type = 'devopsrepository', resource.type = 'devopsconnection', resource.type = 'devopstrigger'}}
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 11 - Lab Commands
+
+
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 12 - Lab Commands
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 13 - Lab Commands
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 14 - Lab Commands
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 15 - Lab Commands
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 16 - Lab Commands
+
+
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 17 - Lab Commands
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 18 - Lab Commands
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 19 - Lab Commands
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 20 - Lab Commands
+
+
+
+
+---------------------------------------------------------------------------------------
+Lesson 21 - Lab Commands
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
